@@ -171,7 +171,7 @@ create table bill(
                             q = 'select cid from customer where cid="'+select+'"'
                             conn.execute(q)
                             result = conn.fetchone()
-                            customer = str(result[0]) # customer id
+                            customer = str(result[0])   # customer id
                             total = price * quant
                             q = 'insert into bill(cid,itemID,quantity,amount) values("'+customer+'","'+s+'",'+str(quant)+','+str(total)+')'
                             conn.execute(q)
@@ -184,7 +184,7 @@ create table bill(
                             conn.execute(q)
                             print("Bill Generated is ")
                             result = conn.fetchall()
-                            table = DataFrame(result, columns=['Order ID','Customer ID','Item ID','Quantity','Amount'])
+                            table = DataFrame(result, columns=['Order ID', 'Customer ID', 'Item ID', 'Quantity', 'Amount'])
                             print(table)
                         except:
                             print("Error Encountered while displaying bill")
