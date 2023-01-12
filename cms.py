@@ -4,8 +4,8 @@ from pandas import DataFrame
 # connector
 db = connect(
     host="127.0.0.1",
-    user="root",
-    password="",
+    user="root",      # change the username
+    password="1234",  # change the password
     database="cms"
 )
 
@@ -57,7 +57,7 @@ create table item(
                 try:
                     q = """
 create table bill(
-    orderID varchar(255) not null,
+    orderID int not null auto_increment,
     cid varchar(255) not null,
     itemID varchar(255) not null,
     quantity int not null,
@@ -144,21 +144,55 @@ create table bill(
                 except:
                     print("Error fetching customer list")
             elif k == 4 or k == 5:
-                # Todo: select the items to buy
                 try:
                     q = "select * from item"
                     conn.execute(q)
                     result = conn.fetchall()
                     table = DataFrame(result, columns=['Item ID', 'Item Name', 'Item Price'])
                     print(table)
-                    L = []  # empty to store
-                    while True:
-                        select = input("Select the item by entering itemID: ")
-                        q = 'select ItemPrice from item where itemID="' + select + '"'
-
                 except:
-                    print("Error selecting item")
+                    print("Error displaying items")
+                prices = []  # to store prices
+                quantity = []  # to store quantity
+                while True:
+                    print("Enter 1 to select the item")
+                    print("Enter 2 to display the bill: ")
+                    print("Enter any other number to go back to previous menu: ")
+                    option = int(input())
+                    if option == 1:
+                        try:
+                            s = 'S'+str(int(input("Select the item by entering item number: ")))
+                            q = 'select ItemPrice from item where itemID="' + s + '"'
+                            conn.execute(q)
+                            result = conn.fetchone()
+                            price = result[0]  # item price
+                            quant = int(input("Enter the quantity: "))
+                            select = 'C' + str(int(input("Enter customer number: ")))
+                            q = 'select cid from customer where cid="'+select+'"'
+                            conn.execute(q)
+                            result = conn.fetchone()
+                            customer = str(result[0]) # customer id
+                            total = price * quant
+                            q = 'insert into bill(cid,itemID,quantity,amount) values("'+customer+'","'+s+'",'+str(quant)+','+str(total)+')'
+                            conn.execute(q)
+                            db.commit()
+                        except:
+                            print("Error encountered while entering bill information")
+                    elif option == 2:
+                        try:
+                            q = 'select * from bill'
+                            conn.execute(q)
+                            print("Bill Generated is ")
+                            result = conn.fetchall()
+                            table = DataFrame(result, columns=['Order ID','Customer ID','Item ID','Quantity','Amount'])
+                            print(table)
+                        except:
+                            print("Error Encountered while displaying bill")
+                    else:
+                        break
+
             elif k == 6:
+                # To add items to the inventory
                 try:
                     iid = 'S' + str(int(input("Enter item serial number: ")))
                     iname = input("Enter name of the item: ")
