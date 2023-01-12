@@ -4,7 +4,7 @@ try:
     db = connect(
         host="127.0.0.1",
         user="root",
-        password=""
+        password="1234"
     )
     conn = db.cursor()
     # generating the main system database
